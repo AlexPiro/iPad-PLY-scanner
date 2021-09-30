@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SocketIO",
+        "repositoryURL": "https://github.com/AlexPiro/socket.io-client-swift",
+        "state": {
+          "branch": "master",
+          "revision": "18c91d811aaf0e53f678836e0412d1e33fa504d2",
+          "version": null
+        }
+      },
+      {
+        "package": "Starscream",
+        "repositoryURL": "https://github.com/daltoniam/Starscream",
+        "state": {
+          "branch": null,
+          "revision": "df8d82047f6654d8e4b655d1b1525c64e1059d21",
+          "version": "4.0.4"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

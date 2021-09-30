@@ -9,14 +9,27 @@ import UIKit
 import Metal
 import MetalKit
 import ARKit
+import SocketIO
 
 final class ViewController: UIViewController, ARSessionDelegate {
+
     private let isUIEnabled = true
     private let confidenceControl = UISegmentedControl(items: ["Low", "Medium", "High"])
     private let rgbRadiusSlider = UISlider()
     
     private let session = ARSession()
     private var renderer: Renderer!
+    
+    private var currentPosition = SCNVector3()
+    //private var currentRotation = SCNVector4()
+    private var currentRotation = SCNVector3()
+    private var socket: SocketIOClient!
+
+
+    
+    private var manager = SocketManager(socketURL: URL(string: "http://10.6.22.166:3000")!, config: [.log(true), .compress])
+    
+    var timer = Timer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +40,24 @@ final class ViewController: UIViewController, ARSessionDelegate {
         }
         
         session.delegate = self
+        
+        socket = manager.defaultSocket
+
+        socket.on(clientEvent: .connect) {data, ack in
+            print("socket connected")
+            //self.socket.emit("message", "Hello from swift")
+            
+            self.timer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
+                self.sendPosition()
+                self.sendRotation()
+                
+                self.renderer.updatePointList()
+                self.sendPoints()
+            })
+        }
+        
+        socket.connect()
+        
         
         // Set the view to use the default device
         if let view = view as? MTKView {
@@ -67,17 +98,49 @@ final class ViewController: UIViewController, ARSessionDelegate {
         ])
         
         // Setup a save button
-        let button = UIButton(type: .system, primaryAction: UIAction(title: "Save", handler: { (action) in
-            self.renderer.savePointsToFile()
-        }))
-        button.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(button)
-        NSLayoutConstraint.activate([
-            button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            button.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
-        ])
-    
+//        let button = UIButton(type: .system, primaryAction: UIAction(title: "Save", handler: { (action) in
+//            self.renderer.savePointsToFile()
+//        }))
+        
+//        button.translatesAutoresizingMaskIntoConstraints = false
+//        self.view.addSubview(button)
+//        NSLayoutConstraint.activate([
+//            button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+//            button.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
+//        ])
+        
     }
+    
+    
+    
+    func sendPosition(){
+        do{
+            let data = try JSONEncoder().encode(currentPosition)
+            self.socket.emit("updatedPosition", data)
+        } catch {
+            print ("\(error.localizedDescription)")
+        }
+    }
+    
+    func sendRotation(){
+        do{
+            let data = try JSONEncoder().encode(currentRotation)
+            self.socket.emit("updatedRotation", data)
+        } catch {
+            print ("\(error.localizedDescription)")
+        }
+    }
+    
+    func sendPoints()
+    {
+        let newPoints = self.renderer.pointStringToSend
+        if newPoints != "" {
+            self.socket.emit("sendNewPoint", newPoints)
+        }
+       
+    }
+    
+   
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -142,6 +205,21 @@ final class ViewController: UIViewController, ARSessionDelegate {
             self.present(alertController, animated: true, completion: nil)
         }
     }
+    
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        // Do something with the new transform
+        let currentTransform = frame.camera.transform
+        //print("iPad transform \(currentTransform.position())")
+        currentPosition = currentTransform.position()
+        
+        //let q = simd_quatf(currentTransform)
+        //currentRotation = SCNVector4(q.axis.x, q.axis.y, q.axis.z, q.angle)
+        
+        let a = frame.camera.eulerAngles
+        currentRotation = SCNVector3(a.x, a.y, a.z)
+        
+        //print("Rotation X:\(rad2deg(Double(rot.x))) Y:\(rad2deg(Double(rot.y))) Z:\(rad2deg(Double(rot.z)))")
+    }
 }
 
 // MARK: - MTKViewDelegate
@@ -171,3 +249,4 @@ protocol RenderDestinationProvider {
 extension MTKView: RenderDestinationProvider {
     
 }
+

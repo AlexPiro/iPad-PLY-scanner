@@ -79,6 +79,12 @@ final class Renderer {
     private var currentPointIndex = 0
     private var currentPointCount = 0
     
+    
+    public var pointsToSend: [String] = []
+    public var pointStringToSend: String = ""
+    private var lastLimit = 0
+    
+    
     // Camera data
     private var sampleFrame: ARFrame { session.currentFrame! }
     private lazy var cameraResolution = Float2(Float(sampleFrame.camera.imageResolution.width), Float(sampleFrame.camera.imageResolution.height))
@@ -225,6 +231,9 @@ final class Renderer {
             
         commandBuffer.present(renderDestination.currentDrawable!)
         commandBuffer.commit()
+        
+        //self.sendCurrentPoint()
+        
     }
     
     private func shouldAccumulate(frame: ARFrame) -> Bool {
@@ -256,7 +265,9 @@ final class Renderer {
         currentPointIndex = (currentPointIndex + gridPointsBuffer.count) % maxPoints
         currentPointCount = min(currentPointCount + gridPointsBuffer.count, maxPoints)
         lastCameraTransform = frame.camera.transform
+
     }
+    
     
     public func exportMesh(){
         
@@ -356,6 +367,7 @@ private extension Renderer {
         return texture
     }
     
+    
     static func cameraToDisplayRotation(orientation: UIInterfaceOrientation) -> Int {
         switch orientation {
         case .landscapeLeft:
@@ -380,6 +392,45 @@ private extension Renderer {
         let rotationAngle = Float(cameraToDisplayRotation(orientation: orientation)) * .degreesToRadian
         return flipYZ * matrix_float4x4(simd_quaternion(rotationAngle, Float3(0, 0, 1)))
     }
+    
+    
+    public func updatePointList()
+    {
+        if lastLimit==currentPointCount {
+            return
+        }
+            
+            
+        var pointsString = ""
+        for i in lastLimit..<currentPointCount {
+        
+            // 3
+            let point = particlesBuffer[i]
+            let colors = point.color
+            
+            // 4
+            let red = Int(colors.x * 255.0).clamped(to: 0...255)
+            let green = Int(colors.y * 255.0).clamped(to: 0...255)
+            let blue = Int(colors.z * 255.0).clamped(to: 0...255)
+            
+            // 5
+            let pvValue = "\(point.position.x) \(point.position.y) \(point.position.z) \(Int(red)) \(Int(green)) \(Int(blue)) 255"
+            
+            if(pvValue != "0.0 0.0 0.0 0 0 0 255")
+            {
+                pointsString += pvValue
+                pointsString += "\r\n"
+            }
+
+       
+            
+        }
+        
+        pointStringToSend = pointsString
+        lastLimit = currentPointCount
+ 
+    }
+    
     
     public func savePointsToFile() {
     

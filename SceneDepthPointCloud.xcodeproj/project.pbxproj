@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05A3B2B1270340620062EAE7 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 05A3B2B0270340620062EAE7 /* SocketIO */; };
 		E73DD13124636FEF00D77039 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E73DD13024636FEF00D77039 /* AppDelegate.swift */; };
 		E73DD13324636FEF00D77039 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E73DD13224636FEF00D77039 /* Shaders.metal */; };
 		E73DD13624636FEF00D77039 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E73DD13524636FEF00D77039 /* Renderer.swift */; };
@@ -42,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05A3B2B1270340620062EAE7 /* SocketIO in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,6 +120,9 @@
 			dependencies = (
 			);
 			name = SceneDepthPointCloud;
+			packageProductDependencies = (
+				05A3B2B0270340620062EAE7 /* SocketIO */,
+			);
 			productName = SceneDepthDemo;
 			productReference = E73DD12D24636FEF00D77039 /* Point Cloud.app */;
 			productType = "com.apple.product-type.application";
@@ -138,7 +143,7 @@
 				};
 			};
 			buildConfigurationList = E73DD12824636FEF00D77039 /* Build configuration list for PBXProject "SceneDepthPointCloud" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 10.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -146,6 +151,9 @@
 				Base,
 			);
 			mainGroup = E73DD12424636FEF00D77039;
+			packageReferences = (
+				05A3B2AF270340620062EAE7 /* XCRemoteSwiftPackageReference "socket" */,
+			);
 			productRefGroup = E73DD12E24636FEF00D77039 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -333,7 +341,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = W54Y8JAS33;
+				DEVELOPMENT_TEAM = G344GHBG24;
 				INFOPLIST_FILE = SceneDepthPointCloud/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -359,7 +367,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = W54Y8JAS33;
+				DEVELOPMENT_TEAM = G344GHBG24;
 				INFOPLIST_FILE = SceneDepthPointCloud/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -398,6 +406,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		05A3B2AF270340620062EAE7 /* XCRemoteSwiftPackageReference "socket" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AlexPiro/socket.io-client-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		05A3B2B0270340620062EAE7 /* SocketIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 05A3B2AF270340620062EAE7 /* XCRemoteSwiftPackageReference "socket" */;
+			productName = SocketIO;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E73DD12524636FEF00D77039 /* Project object */;
 }
